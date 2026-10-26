@@ -51,12 +51,18 @@
 html, body {
   width: 100%;
   height: 100%;
+  height: 100vh;
+  height: 100dvh;
+  max-height: 100vh;
+  max-height: 100dvh;
+  margin: 0;
+  padding: 0;
   background-color: var(--bg-darkest);
   color: var(--text-primary);
   font-family: var(--font-sans);
   font-size: 15px;
-  line-height: 1.6;
-  overflow-x: hidden;
+  line-height: 1.5;
+  overflow: hidden;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -77,23 +83,32 @@ button {
 .app-root {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  max-height: 100vh;
+  max-height: 100dvh;
   position: relative;
   background: radial-gradient(circle at 50% 0%, #131929 0%, #07090e 70%);
+  overflow: hidden;
 }
 
 /* ==========================================================================
    Header Navigation
    ========================================================================== */
 .app-header {
-  position: sticky;
-  top: 0;
+  position: relative;
+  height: 52px;
+  min-height: 52px;
+  max-height: 52px;
+  box-sizing: border-box;
+  flex-shrink: 0;
   z-index: 100;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.75rem 1.75rem;
-  background: rgba(8, 11, 18, 0.82);
+  padding: 0.4rem 1.5rem;
+  background: rgba(8, 11, 18, 0.85);
   backdrop-filter: var(--glass-blur);
   border-bottom: 1px solid var(--glass-border);
 }
@@ -321,10 +336,23 @@ button {
 /* ==========================================================================
    Cinema Theater View
    ========================================================================== */
+.app-main-viewport {
+  flex: 1 1 0%;
+  min-height: 0;
+  height: calc(100vh - 52px);
+  height: calc(100dvh - 52px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
 .cinema-view-container {
   display: flex;
   flex-direction: column;
-  flex: 1;
+  flex: 1 1 0%;
+  min-height: 0;
+  height: 100%;
   position: relative;
   overflow: hidden;
 }
@@ -332,26 +360,38 @@ button {
 .cinema-theater-stage {
   display: flex;
   flex-direction: column;
-  flex: 1;
+  flex: 1 1 0%;
+  min-height: 0;
+  height: 100%;
   align-items: center;
-  justify-content: flex-start;
-  padding: 1rem 2rem 2rem;
+  justify-content: space-between;
+  padding: 0.35rem 1.25rem 0.5rem;
   max-width: 1440px;
   margin: 0 auto;
   width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 /* Canvas Frame & Ken Burns */
 .cinematic-canvas-frame {
   position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
   width: 100%;
-  max-width: 1200px;
+  max-height: calc(100vh - 170px);
+  max-height: calc(100dvh - 170px);
+  max-width: min(1360px, calc((100vh - 170px) * 16 / 9));
+  max-width: min(1360px, calc((100dvh - 170px) * 16 / 9));
   aspect-ratio: 16 / 9;
-  border-radius: 16px;
+  border-radius: 14px;
   overflow: hidden;
-  box-shadow: var(--glass-shadow), 0 0 60px rgba(0, 0, 0, 0.8);
+  box-shadow: var(--glass-shadow), 0 0 60px rgba(0, 0, 0, 0.85);
   border: 1px solid var(--glass-border);
   background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .cinematic-art-img {
@@ -505,50 +545,79 @@ button {
 }
 
 /* ==========================================================================
-   Teleprompter Subtitles
+   Teleprompter Subtitles (Single 5-10 word line fitting on 1 row)
    ========================================================================== */
 .teleprompter-container {
   width: 100%;
-  max-width: 1100px;
-  margin-top: 1.25rem;
-  min-height: 80px;
+  max-width: min(960px, calc((100vh - 170px) * 16 / 9));
+  max-width: min(960px, calc((100dvh - 170px) * 16 / 9));
+  margin: 0.35rem auto 0;
+  min-height: 44px;
+  height: 44px;
+  max-height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 0.85rem 1.5rem;
-  background: rgba(13, 17, 26, 0.55);
+  padding: 0.2rem 1.25rem;
+  background: rgba(11, 15, 24, 0.72);
   backdrop-filter: var(--glass-blur);
   border: 1px solid var(--glass-border);
-  border-radius: 14px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  flex-shrink: 0;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .teleprompter-text {
   font-family: var(--font-display);
-  font-size: 1.28rem;
-  font-weight: 400;
-  line-height: 1.6;
-  color: rgba(255, 255, 255, 0.65);
-  transition: color var(--transition-fast);
+  font-size: 1.18rem;
+  font-weight: 500;
+  line-height: 1.2;
+  color: rgba(255, 255, 255, 0.75);
+  transition: opacity 0.18s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.teleprompter-line-fade {
+  animation: singleLineFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes singleLineFadeIn {
+  from {
+    opacity: 0.3;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Word-by-word active glow */
 .teleprompter-word {
   display: inline-block;
-  margin: 0 0.18em;
-  transition: all 0.22s ease-out;
+  margin: 0 0.22em;
+  transition: all 0.18s ease-out;
+  white-space: nowrap;
 }
 
 .teleprompter-word.active {
   color: #fff;
-  font-weight: 600;
-  text-shadow: 0 0 18px var(--accent-color), 0 0 35px var(--accent-color);
-  transform: scale(1.05);
+  font-weight: 700;
+  text-shadow: 0 0 16px var(--accent-color), 0 0 32px var(--accent-color);
+  transform: scale(1.08);
 }
 
 .teleprompter-word.spoken {
-  color: rgba(255, 255, 255, 0.92);
+  color: rgba(255, 255, 255, 0.95);
 }
 
 /* ==========================================================================
@@ -556,14 +625,18 @@ button {
    ========================================================================== */
 .cinema-control-deck {
   width: 100%;
-  max-width: 1200px;
-  margin-top: 1.25rem;
-  background: rgba(13, 17, 26, 0.7);
+  max-width: min(1200px, calc((100vh - 170px) * 16 / 9));
+  max-width: min(1200px, calc((100dvh - 170px) * 16 / 9));
+  margin: 0.35rem auto 0;
+  background: rgba(13, 17, 26, 0.75);
   backdrop-filter: var(--glass-blur);
   border: 1px solid var(--glass-border);
-  border-radius: 16px;
-  padding: 1rem 1.5rem;
+  border-radius: 14px;
+  padding: 0.45rem 1.25rem;
   box-shadow: var(--glass-shadow);
+  flex-shrink: 0;
+  position: relative;
+  box-sizing: border-box;
 }
 
 /* Scrubber Bar */
@@ -756,16 +829,25 @@ button {
   background: var(--bg-surface-active);
 }
 
-/* Scene Thumbnail Drawer */
+/* Scene Thumbnail Drawer (Floats over stage when toggled, never causing vertical scroll) */
 .scene-thumbnail-drawer {
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--glass-border);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background: rgba(10, 14, 22, 0.96);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
+  padding: 0.75rem 1rem;
+  box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.85);
   display: none;
+  z-index: 60;
 }
 
 .scene-thumbnail-drawer.open {
   display: block;
+  animation: singleLineFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .scene-thumbnail-strip {
@@ -949,6 +1031,15 @@ button {
 /* ==========================================================================
    Exhibition Gallery View
    ========================================================================== */
+.gallery-view-container,
+.studio-view-container {
+  flex: 1 1 0%;
+  min-height: 0;
+  height: 100%;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 .gallery-container {
   max-width: 1400px;
   margin: 0 auto;

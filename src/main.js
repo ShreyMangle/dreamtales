@@ -253,14 +253,95 @@ class AstralisApp {
     }
   }
 
-  prepareTeleprompter(narrationText) {
-    this.wordsList = narrationText.split(/(\s+)/);
-    this.activeWordIndex = -1;
+  buildLineChunks(narrationText) {
+    // Splits text into word tokens with exact character boundaries
+    const wordRegex = /(\S+)/g;
+    const rawWords = [];
+    let match;
+    while ((match = wordRegex.exec(narrationText)) !== null) {
+      rawWords.push({
+        text: match[0],
+        start: match.index,
+        end: match.index + match[0].length
+      });
+    }
 
-    this.teleprompterText.innerHTML = this.wordsList.map((token, i) => {
-      if (/^\s+$/.test(token)) return token;
-      return `<span class="teleprompter-word" data-word-idx="${i}">${token}</span>`;
-    }).join('');
+    if (rawWords.length === 0) return [];
+
+    const chunks = [];
+    let i = 0;
+
+    while (i < rawWords.length) {
+      // Strictly 5 to 10 words per line
+      const minWords = 5;
+      const targetWords = 7;
+      const maxWords = 9;
+
+      let take = Math.min(targetWords, rawWords.length - i);
+
+      // Check if there is a natural punctuation break (comma, colon, period) between minWords and maxWords
+      let foundPunctBreak = -1;
+      for (let j = minWords; j <= Math.min(maxWords, rawWords.length - i); j++) {
+        const w = rawWords[i + j - 1].text;
+        if (/[,;:.!?]$/.test(w)) {
+          foundPunctBreak = j;
+          break;
+        }
+      }
+
+      if (foundPunctBreak !== -1) {
+        take = foundPunctBreak;
+      } else {
+        const remaining = (rawWords.length - i) - take;
+        if (remaining > 0 && remaining < minWords) {
+          if (take + remaining <= 10) {
+            take += remaining;
+          } else {
+            take = Math.max(minWords, Math.floor((rawWords.length - i) / 2));
+          }
+        }
+      }
+
+      const chunkWords = rawWords.slice(i, i + take);
+      const startChar = chunkWords[0].start;
+      const endChar = chunkWords[chunkWords.length - 1].end;
+
+      chunks.push({
+        words: chunkWords,
+        startChar,
+        endChar
+      });
+
+      i += take;
+    }
+
+    if (chunks.length > 0) {
+      chunks[chunks.length - 1].endChar = Math.max(chunks[chunks.length - 1].endChar, narrationText.length);
+    }
+
+    return chunks;
+  }
+
+  prepareTeleprompter(narrationText) {
+    this.lineChunks = this.buildLineChunks(narrationText);
+    this.currentChunkIdx = -1;
+    // Display ONLY the opening 5-10 word line
+    this.displayChunk(0);
+  }
+
+  displayChunk(chunkIdx) {
+    if (!this.lineChunks || !this.lineChunks[chunkIdx]) return;
+    this.currentChunkIdx = chunkIdx;
+    const chunk = this.lineChunks[chunkIdx];
+
+    // Render ONLY this single line of 5-10 words
+    this.teleprompterText.innerHTML = chunk.words.map((w) => {
+      return `<span class="teleprompter-word" data-start="${w.start}" data-end="${w.end}">${w.text}</span>`;
+    }).join(' ');
+
+    this.teleprompterText.classList.remove('teleprompter-line-fade');
+    void this.teleprompterText.offsetWidth; // trigger reflow for smooth fade
+    this.teleprompterText.classList.add('teleprompter-line-fade');
   }
 
   playCurrentScene() {
@@ -300,37 +381,46 @@ class AstralisApp {
   }
 
   highlightTeleprompterWord(charIndex, fullText) {
-    const wordElements = this.teleprompterContainer.querySelectorAll('.teleprompter-word');
-    let cumLength = 0;
-    let foundIdx = -1;
+    if (!this.lineChunks || this.lineChunks.length === 0) return;
 
-    for (let i = 0; i < this.wordsList.length; i++) {
-      const token = this.wordsList[i];
-      if (cumLength <= charIndex && charIndex < cumLength + token.length) {
-        foundIdx = i;
-        break;
+    // 1. Identify which 5-10 word line chunk contains the current narration charIndex
+    let targetChunkIdx = this.lineChunks.findIndex(c => charIndex >= c.startChar && charIndex < c.endChar);
+    if (targetChunkIdx === -1) {
+      if (charIndex >= this.lineChunks[this.lineChunks.length - 1].endChar) {
+        targetChunkIdx = this.lineChunks.length - 1;
+      } else {
+        targetChunkIdx = 0;
       }
-      cumLength += token.length;
     }
 
-    if (foundIdx !== -1) {
-      wordElements.forEach(el => {
-        const idx = parseInt(el.dataset.wordIdx, 10);
-        if (idx === foundIdx) {
-          el.classList.add('active');
-          el.classList.add('spoken');
-        } else if (idx < foundIdx) {
-          el.classList.remove('active');
-          el.classList.add('spoken');
-        } else {
-          el.classList.remove('active');
-          el.classList.remove('spoken');
-        }
-      });
+    // 2. Only show the line currently being read (5-10 words)
+    if (targetChunkIdx !== this.currentChunkIdx) {
+      this.displayChunk(targetChunkIdx);
     }
+
+    // 3. Highlight words within this single active line
+    const wordElements = this.teleprompterContainer.querySelectorAll('.teleprompter-word');
+    wordElements.forEach(el => {
+      const start = parseInt(el.dataset.start, 10);
+      const end = parseInt(el.dataset.end, 10);
+
+      if (charIndex >= start && charIndex < end) {
+        el.classList.add('active');
+        el.classList.add('spoken');
+      } else if (charIndex >= end) {
+        el.classList.remove('active');
+        el.classList.add('spoken');
+      } else {
+        el.classList.remove('active');
+        el.classList.remove('spoken');
+      }
+    });
   }
 
   markAllWordsSpoken() {
+    if (this.lineChunks && this.lineChunks.length > 0) {
+      this.displayChunk(this.lineChunks.length - 1);
+    }
     const wordElements = this.teleprompterContainer.querySelectorAll('.teleprompter-word');
     wordElements.forEach(el => {
       el.classList.remove('active');
