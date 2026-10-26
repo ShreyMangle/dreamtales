@@ -1,0 +1,16 @@
+{
+  "name": "dreamtales",
+  "version": "1.0.0",
+  "description": "DreamTales - Narrated Generative Art & Cinematic Storytelling Experience",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "generate:audio": "node scripts/build_story_assets.js"
+  },
+  "devDependencies": {
+    "vite": "^8.3.4"
+  }
+}
