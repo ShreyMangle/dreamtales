@@ -22,6 +22,15 @@ export class ParticleSystem {
       this.mouseY = (e.clientY - rect.top) * (this.canvas.height / rect.height);
     });
 
+    // Battery & CPU optimization: pause particle animation when tab is inactive
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        this.stop();
+      } else {
+        this.start();
+      }
+    });
+
     this.initParticles();
   }
 

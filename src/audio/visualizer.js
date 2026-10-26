@@ -16,6 +16,15 @@ export class AudioVisualizer {
 
     this.resize();
     window.addEventListener('resize', () => this.resize());
+
+    // Power saving: pause visualizer rendering loop when tab is hidden
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        this.stop();
+      } else {
+        this.start();
+      }
+    });
   }
 
   resize() {
