@@ -686,6 +686,22 @@ class AstralisApp {
     });
   }
 
+  showToast(message, icon = '✨') {
+    let toast = document.getElementById('astralis-hud-toast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'astralis-hud-toast';
+      toast.className = 'hud-toast';
+      document.body.appendChild(toast);
+    }
+    toast.innerHTML = `<span class="hud-toast-icon">${icon}</span><span class="hud-toast-msg">${message}</span>`;
+    toast.classList.add('visible');
+    clearTimeout(this._toastTimer);
+    this._toastTimer = setTimeout(() => {
+      toast.classList.remove('visible');
+    }, 1700);
+  }
+
   setupKeyboardShortcuts() {
     window.addEventListener('keydown', (e) => {
       // Don't trigger if user is typing in input or textarea
@@ -694,20 +710,30 @@ class AstralisApp {
       if (e.code === 'Space') {
         e.preventDefault();
         this.mainPlayBtn.click();
+        const isPlaying = this.speech.isPlaying && !this.speech.isPaused;
+        this.showToast(isPlaying ? 'Narration Resumed' : 'Narration Paused', isPlaying ? '▶️' : '⏸️');
       } else if (e.code === 'ArrowRight') {
         e.preventDefault();
         this.nextSceneBtn.click();
+        this.showToast(`Scene ${this.currentSceneIdx + 1} of ${this.currentStory.scenes.length}`, '⏭️');
       } else if (e.code === 'ArrowLeft') {
         e.preventDefault();
         this.prevSceneBtn.click();
+        this.showToast(`Scene ${this.currentSceneIdx + 1} of ${this.currentStory.scenes.length}`, '⏮️');
       } else if (e.key === 'm' || e.key === 'M') {
         this.ambientToggleBtn.click();
+        this.showToast(this.ambient.isMuted ? 'Ambient Muted' : 'Ambient Active', this.ambient.isMuted ? '🔇' : '🎵');
       } else if (e.key === 'f' || e.key === 'F') {
         this.fullscreenBtn.click();
+        const isFull = !!document.fullscreenElement;
+        this.showToast(isFull ? 'Fullscreen Enabled' : 'Fullscreen Exited', '⛶');
       } else if (e.key === 'i' || e.key === 'I') {
         this.inspectDrawerToggle.click();
+        this.showToast('Art Inspector Toggled', '🔍');
       } else if (e.key === 't' || e.key === 'T') {
         this.toggleSubtitlesBtn.click();
+        const isSubVisible = this.teleprompterContainer.style.display !== 'none';
+        this.showToast(isSubVisible ? 'Captions Enabled' : 'Captions Hidden', '💬');
       }
     });
   }
