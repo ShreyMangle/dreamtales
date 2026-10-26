@@ -1760,3 +1760,21 @@ button {
     flex: auto;
   }
 }
+
+/* --- Accessibility: High-Visibility Focus Rings for Keyboard Navigation (WCAG 2.1 AA) --- */
+:focus-visible {
+  outline: 2px solid var(--accent-cyan);
+  outline-offset: 3px;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.5) !important;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+.btn-nav-primary:focus-visible,
+.btn-round-glass:focus-visible,
+.btn-cinema-play:focus-visible {
+  outline: 2px solid var(--accent-cyan);
+  outline-offset: 3px;
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.6) !important;
+}
