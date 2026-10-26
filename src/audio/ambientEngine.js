@@ -15,6 +15,19 @@ export class AmbientEngine {
     this.isMuted = true; // Started muted by default for crystal-clear voice narration
     this.isDucked = false;
     this.intervalId = null;
+
+    // Automatic user interaction unlock for Web Audio context across desktop & mobile
+    const unlockHandler = () => {
+      if (this.ctx && this.ctx.state === 'suspended') {
+        this.ctx.resume().catch(() => {});
+      }
+      window.removeEventListener('pointerdown', unlockHandler);
+      window.removeEventListener('keydown', unlockHandler);
+      window.removeEventListener('touchstart', unlockHandler);
+    };
+    window.addEventListener('pointerdown', unlockHandler, { passive: true });
+    window.addEventListener('keydown', unlockHandler, { passive: true });
+    window.addEventListener('touchstart', unlockHandler, { passive: true });
   }
 
   ensureContext() {
