@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ASTRALIS — Generative Narrated Art Experience</title>
+    <meta name="description" content="An immersive static image-based digital art experience combining generative visuals, procedural soundscapes, and synchronized expressive narration." />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌌</text></svg>" />
+    <!-- Google Fonts: Cinzel Decorative, Cinzel, Outfit, Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <div id="app" class="app-root">
+      <!-- Top Navigation Bar -->
+      <header class="app-header" id="app-header">
+        <div class="header-left">
+          <div class="logo-group" id="logo-home-btn" role="button" tabindex="0">
+            <div class="logo-glyph">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+              </svg>
+            </div>
+            <div class="logo-text">
+              <span class="logo-title">ASTRALIS</span>
+              <span class="logo-badge">NARRATED ART</span>
+            </div>
+          </div>
+
+          <!-- Story Selector Dropdown -->
+          <div class="story-selector-wrapper">
+            <button class="story-select-trigger" id="story-dropdown-btn">
+              <span class="current-story-indicator" id="current-story-dot"></span>
+              <span class="current-story-name" id="current-story-name">Chronicles of the Astral Archivist</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="story-dropdown-menu" id="story-dropdown-menu" style="display: none;"></div>
+          </div>
+        </div>
+
+        <!-- Center View Navigation Switcher -->
+        <nav class="view-nav-tabs" aria-label="Main Navigation">
+          <button class="nav-tab-btn active" data-view="cinema" id="tab-cinema">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            <span>Cinema Theater</span>
+          </button>
+          <button class="nav-tab-btn" data-view="gallery" id="tab-gallery">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            <span>Exhibition Wall</span>
+          </button>
+          <button class="nav-tab-btn" data-view="studio" id="tab-studio">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            <span>Creation Studio</span>
+          </button>
+        </nav>
+
+        <!-- Right Quick Actions -->
+        <div class="header-right">
+          <!-- Voice Settings Button -->
+          <button class="icon-control-btn" id="voice-settings-btn" title="Voice & Narration Settings">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+              <line x1="12" y1="19" x2="12" y2="23"/>
+              <line x1="8" y1="23" x2="16" y2="23"/>
+            </svg>
+          </button>
+
+          <!-- Ambient Audio Toggle & Volume -->
+          <div class="ambient-audio-control" title="Toggle Ambient Soundscape (Currently Muted)">
+            <button class="icon-control-btn" id="ambient-toggle-btn" title="Toggle Ambient Soundscape">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="ambient-icon">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+                <line x1="23" y1="9" x2="17" y2="15"/>
+                <line x1="17" y1="9" x2="23" y2="15"/>
+              </svg>
+            </button>
+            <input type="range" id="ambient-volume-slider" class="mini-volume-slider" min="0" max="1" step="0.05" value="0.15" title="Ambient Volume" />
+          </div>
+
+          <!-- Fullscreen Toggle -->
+          <button class="icon-control-btn" id="fullscreen-btn" title="Toggle Fullscreen (F)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- Main Stage Area -->
+      <main class="app-main-viewport">
+        <!-- VIEW 1: CINEMA THEATER -->
+        <section class="cinema-view-container active-view" id="view-cinema">
+          <div class="cinema-theater-stage">
+            <!-- Cinematic Artwork Viewport -->
+            <div class="cinematic-canvas-frame" id="canvas-frame">
+              <img id="active-scene-image" class="cinematic-art-img ken-burns-1" src="/art/archivist_1_celestial_archive.png" alt="Art Scene" />
+              
+              <!-- Particle overlay canvas -->
+              <canvas id="particle-canvas" class="particle-canvas-overlay"></canvas>
+
+              <!-- Atmospheric Vignette -->
+              <div class="cinematic-vignette"></div>
+
+              <!-- Top Scene Title Overlay -->
+              <div class="scene-header-overlay">
+                <span class="scene-chapter-badge" id="scene-chapter-badge">CHAPTER I</span>
+                <h1 class="scene-title-display" id="scene-title-display">The Celestial Archive</h1>
+                <p class="scene-story-tag" id="scene-story-tag">Chronicles of the Astral Archivist</p>
+              </div>
+
+              <!-- Audio Reactive Visualizer Ribbon -->
+              <div class="visualizer-ribbon-container">
+                <canvas id="visualizer-canvas" class="visualizer-canvas"></canvas>
+              </div>
+
+              <!-- Art Inspector Quick Toggle Badge -->
+              <button class="art-lore-badge-btn" id="inspect-drawer-toggle" title="View Art Prompt & Lore (I)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                <span>Artwork Details</span>
+              </button>
+            </div>
+
+            <!-- Subtitle Teleprompter Section -->
+            <div class="teleprompter-container" id="teleprompter-container">
+              <div class="teleprompter-text" id="teleprompter-text">
+                <!-- Highlighted words injected here dynamically -->
+              </div>
+            </div>
+
+            <!-- Bottom Cinema Control Deck -->
+            <footer class="cinema-control-deck">
+              <!-- Timeline Scrubber Bar -->
+              <div class="scrubber-bar-wrapper" id="scrubber-track">
+                <div class="scrubber-progress-fill" id="scrubber-fill"></div>
+                <div class="scrubber-markers-layer" id="scrubber-markers"></div>
+              </div>
+
+              <!-- Primary Playback Controls -->
+              <div class="deck-controls-row">
+                <div class="deck-left-info">
+                  <span class="scene-counter" id="scene-counter-display">Scene 1 of 8</span>
+                  <span class="voice-badge-indicator" id="voice-indicator-badge">OpenAI Ash (HD)</span>
+                  <button class="text-toggle-btn" id="toggle-subtitles-btn" title="Toggle Captions">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 15h3M14 15h3M7 11h10"/></svg>
+                    <span>Captions</span>
+                  </button>
+                </div>
+
+                <div class="deck-center-playback">
+                  <button class="transport-btn" id="prev-scene-btn" title="Previous Scene (←)">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5"/></svg>
+                  </button>
+
+                  <button class="transport-btn primary-play-btn" id="main-play-btn" title="Play / Pause (Space)">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" id="play-btn-icon"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                  </button>
+
+                  <button class="transport-btn" id="next-scene-btn" title="Next Scene (→)">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg>
+                  </button>
+
+                  <button class="transport-btn" id="replay-scene-btn" title="Replay Scene">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                  </button>
+                </div>
+
+                <div class="deck-right-options">
+                  <label class="autoplay-toggle-wrapper" title="Automatically advance to next scene when narration concludes">
+                    <input type="checkbox" id="autoplay-checkbox" checked />
+                    <span class="toggle-slider"></span>
+                    <span class="autoplay-label">Autoplay</span>
+                  </label>
+
+                  <button class="drawer-toggle-btn" id="carousel-drawer-toggle" title="Show Scene Thumbnails">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Scene Thumbnail Strip (Collapsible / Scroller) -->
+              <div class="scene-thumbnail-drawer" id="scene-thumbnail-drawer">
+                <div class="scene-thumbnail-strip" id="scene-thumbnail-strip"></div>
+              </div>
+            </footer>
+          </div>
+
+          <!-- Slide-out Art & Lore Inspector Drawer -->
+          <aside class="art-inspector-drawer" id="art-inspector-drawer">
+            <div class="inspector-header">
+              <h3 class="inspector-title">Artistic Metadata</h3>
+              <button class="inspector-close-btn" id="inspector-close-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+              </button>
+            </div>
+            <div class="inspector-content" id="inspector-content">
+              <!-- Dynamic inspector content injected here -->
+            </div>
+          </aside>
+        </section>
+
+        <!-- VIEW 2: EXHIBITION GALLERY -->
+        <section class="gallery-view-container" id="view-gallery" style="display: none;">
+          <!-- Rendered by GalleryView component -->
+        </section>
+
+        <!-- VIEW 3: CREATION STUDIO -->
+        <section class="studio-view-container" id="view-studio" style="display: none;">
+          <!-- Rendered by StoryStudio component -->
+        </section>
+      </main>
+
+      <!-- Voice Settings Modal -->
+      <div class="modal-backdrop" id="voice-settings-modal" style="display: none;">
+        <div class="modal-card">
+          <div class="modal-header">
+            <h3>Narration Engine Settings</h3>
+            <button class="modal-close-icon" id="voice-modal-close">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
+          </div>
+          <div class="modal-body-form">
+            <div class="form-group">
+              <label class="form-label">Narration Voice Engine</label>
+              <div class="voice-mode-toggle-group">
+                <button type="button" class="voice-mode-btn active" id="mode-openai-btn">
+                  <span class="voice-mode-title">OpenAI Ash (HD)</span>
+                  <span class="voice-mode-subtitle">Mastered Cinematic Studio Voice</span>
+                </button>
+                <button type="button" class="voice-mode-btn" id="mode-browser-btn">
+                  <span class="voice-mode-title">Browser Speech</span>
+                  <span class="voice-mode-subtitle">System Speech Synthesizer</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="form-group" id="browser-voice-group" style="display: none;">
+              <label class="form-label" for="voice-select">Voice Timbre / Synthesizer</label>
+              <select id="voice-select" class="form-select"></select>
+            </div>
+
+            <div class="form-group">
+              <div class="label-with-value">
+                <label class="form-label" for="speech-rate-slider">Cadence & Speed</label>
+                <span id="speech-rate-val">0.92x</span>
+              </div>
+              <input type="range" id="speech-rate-slider" class="range-slider" min="0.6" max="1.4" step="0.02" value="0.92" />
+            </div>
+
+            <div class="form-group">
+              <div class="label-with-value">
+                <label class="form-label" for="speech-pitch-slider">Pitch & Warmth</label>
+                <span id="speech-pitch-val">0.98x</span>
+              </div>
+              <input type="range" id="speech-pitch-slider" class="range-slider" min="0.7" max="1.3" step="0.02" value="0.98" />
+            </div>
+
+            <div class="form-group">
+              <div class="label-with-value">
+                <label class="form-label" for="speech-vol-slider">Narration Volume</label>
+                <span id="speech-vol-val">100%</span>
+              </div>
+              <input type="range" id="speech-vol-slider" class="range-slider" min="0" max="1" step="0.05" value="1.0" />
+            </div>
+
+            <button class="primary-pill-btn" id="test-current-voice-btn" style="width: 100%; margin-top: 10px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              <span>Test Sample Voice</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Application Entry Point -->
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
