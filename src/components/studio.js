@@ -2,6 +2,8 @@
  * Interactive Story Creation Studio
  * Empowers users to craft custom narratives, generate scenes, customize narration, and launch instant experiences.
  */
+import { getAssetUrl } from '../utils/assets.js';
+
 export class StoryStudio {
   constructor(container, onSaveStory) {
     this.container = container;
@@ -244,7 +246,7 @@ export class StoryStudio {
                   '/art/heart_of_gears.jpg',
                   '/art/botanical_dawn.jpg'
                 ].map(img => `
-                  <img src="${img}" class="curated-mini-thumb ${s.image === img ? 'selected' : ''}" data-src="${img}" />
+                  <img src="${getAssetUrl(img)}" class="curated-mini-thumb ${s.image === img ? 'selected' : ''}" data-src="${img}" />
                 `).join('')}
               </div>
             </div>

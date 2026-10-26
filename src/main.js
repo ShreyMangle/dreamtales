@@ -10,6 +10,7 @@ import { AudioVisualizer } from './audio/visualizer.js';
 import { ParticleSystem } from './visuals/particles.js';
 import { GalleryView } from './components/gallery.js';
 import { StoryStudio } from './components/studio.js';
+import { getAssetUrl } from './utils/assets.js';
 
 class AstralisApp {
   constructor() {
@@ -223,7 +224,7 @@ class AstralisApp {
     // Update Art image with smooth fade
     this.activeSceneImg.style.opacity = '0.3';
     setTimeout(() => {
-      this.activeSceneImg.src = scene.image;
+      this.activeSceneImg.src = getAssetUrl(scene.image);
       this.activeSceneImg.onload = () => {
         this.activeSceneImg.style.opacity = '1';
       };
@@ -350,7 +351,7 @@ class AstralisApp {
     this.ambient.duck(true);
 
     this.speech.speak(scene.narration, {
-      audioUrl: scene.audio,
+      audioUrl: getAssetUrl(scene.audio),
       onStart: () => {
         this.updatePlayBtnState(true);
         this.ambient.duck(true);
@@ -460,7 +461,7 @@ class AstralisApp {
     const story = this.currentStory;
     this.sceneThumbnailStrip.innerHTML = story.scenes.map((s, idx) => `
       <div class="strip-thumb-item ${idx === this.currentSceneIdx ? 'active' : ''}" data-idx="${idx}">
-        <img src="${s.image}" alt="${s.title}" />
+        <img src="${getAssetUrl(s.image)}" alt="${s.title}" />
         <div class="strip-thumb-overlay">
           <span class="strip-thumb-title">${s.chapter}. ${s.title}</span>
         </div>

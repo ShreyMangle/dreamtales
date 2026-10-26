@@ -2,6 +2,8 @@
  * Art Gallery Exhibition Component
  * High-aesthetic digital exhibition wall showcasing all generated artwork, prompts, and lore
  */
+import { getAssetUrl } from '../utils/assets.js';
+
 export class GalleryView {
   constructor(container, stories, onSelectScene) {
     this.container = container;
@@ -69,7 +71,7 @@ export class GalleryView {
     return pieces.map(piece => `
       <article class="art-card" data-story="${piece.storyId}" data-scene="${piece.id}">
         <div class="art-card-media">
-          <img src="${piece.image}" alt="${piece.title}" loading="lazy" />
+          <img src="${getAssetUrl(piece.image)}" alt="${piece.title}" loading="lazy" />
           <div class="art-card-overlay">
             <button class="action-btn play-scene-btn" title="Launch Narrated Scene">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
@@ -167,7 +169,7 @@ export class GalleryView {
     body.innerHTML = `
       <div class="modal-grid">
         <div class="modal-preview-wrapper">
-          <img src="${piece.image}" alt="${piece.title}" class="modal-full-img" />
+          <img src="${getAssetUrl(piece.image)}" alt="${piece.title}" class="modal-full-img" />
           <div class="modal-preview-controls">
             <button class="primary-pill-btn launch-experience-btn">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
